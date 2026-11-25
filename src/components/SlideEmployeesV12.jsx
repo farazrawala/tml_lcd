@@ -9,17 +9,17 @@ export function SlideEmployeesV12({ slide }) {
     [BadgeDollarSign, "Yearly target", person.yearlyTarget, "Achieved", person.yearlyAchieved],
   ]
   return (
-    <section className="relative grid h-full w-full grid-cols-[1.15fr_0.85fr] items-center gap-[4vw] overflow-hidden bg-[#071a3a] px-[5vw] py-[6vh] text-white">
+    <section className="relative grid h-full w-full grid-cols-[1.4fr_0.7fr] items-center gap-[3vw] overflow-hidden bg-[#071a3a] px-[4vw] py-[6vh] text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_45%,rgba(56,189,248,0.16),transparent_28%)]" />
       <div className="relative z-10 min-w-0">
         <img src="/tml-logo.svg" alt="TML Global" className="h-[clamp(7rem,16vh,11rem)] w-auto" />
         <h2 className="font-heading mt-4 max-w-[14ch] text-[clamp(2.4rem,4.4vw,5rem)] leading-[0.95] font-extrabold">{slide.title || "Meet Your Sales Representative"}</h2>
         {!!slide.supporting && <p className="mt-5 max-w-xl text-[clamp(1rem,1.3vw,1.35rem)] leading-relaxed text-white/75">{slide.supporting}</p>}
-        <div className="mt-[5vh] grid max-w-3xl grid-cols-3 gap-6">
+        <div className="mt-[5vh] grid grid-cols-3 gap-8">
           {stats.map(([Icon, label, target, achievedLabel, achieved]) => (
-            <div key={label} className="min-w-0">
+            <div key={label}>
               <Icon className="size-[clamp(1.6rem,2vw,2.2rem)] text-cyan-300" />
-              <p className="mt-2 text-[clamp(1rem,1.35vw,1.6rem)] font-bold tracking-[0.12em] text-white uppercase">{label}</p>
+              <p className="mt-2 text-[clamp(1rem,1.35vw,1.6rem)] font-bold tracking-[0.08em] whitespace-nowrap text-white uppercase">{label}</p>
               <p className="font-heading text-[clamp(2rem,2.8vw,3.6rem)] leading-none font-extrabold text-[#ff9a3c]">{money(target)}</p>
               <p className="mt-3 text-[clamp(1rem,1.35vw,1.6rem)] tracking-[0.12em] text-white/50 uppercase">{achievedLabel}</p>
               {isZeroAchieved(achieved) && String(achieved ?? "").trim() !== "" ? (
