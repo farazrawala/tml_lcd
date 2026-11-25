@@ -27,7 +27,7 @@ jobs:
         with:
           server: 162.0.209.188
           username: lcd@thetml.com
-          password: "Z_%Lm&ckvs$17{CP}"
+          password: "Z_%25Lm&ckvs$17{CP}"
           protocol: ftp
           port: 21
           local-dir: dist/
