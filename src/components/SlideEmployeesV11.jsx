@@ -43,7 +43,7 @@ function Ring({ percent, color }) {
 function DuckEgg() {
   return (
     <span className="relative inline-block h-[clamp(1.5rem,3vh,2.2rem)] w-[4.6rem] overflow-hidden align-bottom">
-      <img src="/egg-broken.gif?v=6" alt="Achieved is zero" className="duck-egg absolute bottom-0 left-1/2 h-[clamp(1.15rem,2.6vh,1.7rem)] w-auto -translate-x-1/2" />
+      <span className="duck-egg absolute bottom-0 left-1/2 text-[clamp(1.15rem,2.6vh,1.8rem)] leading-none" role="img" aria-label="Achieved is zero">🥚</span>
       <span className="duck-walk absolute bottom-0 text-[clamp(1.15rem,2.4vh,1.7rem)] leading-none" aria-hidden="true">🦆</span>
     </span>
   )
