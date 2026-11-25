@@ -22,7 +22,7 @@ export function SlideEmployeesV12({ slide }) {
       <div className="relative z-10 min-w-0">
         <div className="flex items-center justify-between gap-6">
           <img src="/tml-logo.svg" alt="TML Global" className="h-[clamp(7rem,16vh,11rem)] w-auto" />
-          <div className="translate-x-[9vw] text-right">
+          <div className="translate-x-[6vw] text-right">
             <p className="text-[clamp(0.9rem,1.2vw,1.4rem)] font-bold tracking-[0.22em] text-white">ACHIEVE PERCENT</p>
             <p className="font-heading text-[clamp(3rem,5.5vw,6.5rem)] leading-none font-extrabold text-emerald-300">{percentLabel(person.achievePercent)}</p>
           </div>
@@ -35,7 +35,7 @@ export function SlideEmployeesV12({ slide }) {
               <Icon className="size-[clamp(1.6rem,2vw,2.2rem)] text-cyan-300" />
               <p className="mt-2 text-[clamp(1rem,1.25vw,1.55rem)] font-bold tracking-[0.06em] text-white uppercase">{label}</p>
               <p className="font-heading text-[clamp(2.4rem,3.3vw,4.2rem)] leading-none font-extrabold text-[#ff9a3c]">{money(target)}</p>
-              <p className="mt-3 text-[clamp(1.15rem,1.55vw,1.9rem)] tracking-[0.12em] text-white/50 uppercase">{achievedLabel}</p>
+              <p className="mt-3 text-[clamp(1.15rem,1.55vw,1.9rem)] font-bold tracking-[0.12em] text-white uppercase">{achievedLabel}</p>
               {isZeroAchieved(achieved) && String(achieved ?? "").trim() !== "" ? (
                 <img src="/egg-broken.gif?v=6" alt="Achieved is zero" className="mt-1 h-[clamp(1.6rem,3vh,2.2rem)] w-auto" />
               ) : (

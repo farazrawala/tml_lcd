@@ -3,6 +3,19 @@
   "imageMs": 4000,
   "slides": [
     {
+      "id": "employees-1795608943547",
+      "type": "employees-v12",
+      "images": [],
+      "employees": [],
+      "kicker": "",
+      "title": "EMPLOYEES PERFORMANCE",
+      "subtitle": "",
+      "supporting": "",
+      "cta": "",
+      "footer": "",
+      "sheetUrl": "https://docs.google.com/spreadsheets/d/1kaMqD6MM9EodUjkBW7kj5MqtFBlChMaQ/edit?gid=166502164#gid=166502164"
+    },
+    {
       "id": "fullscreen-1795623485036",
       "type": "fullscreen",
       "images": [
@@ -16,19 +29,6 @@
       "cta": "",
       "footer": "",
       "sheetUrl": ""
-    },
-    {
-      "id": "employees-1795608943547",
-      "type": "employees-v12",
-      "images": [],
-      "employees": [],
-      "kicker": "",
-      "title": "EMPLOYEES PERFORMANCE",
-      "subtitle": "",
-      "supporting": "",
-      "cta": "",
-      "footer": "",
-      "sheetUrl": "https://docs.google.com/spreadsheets/d/1kaMqD6MM9EodUjkBW7kj5MqtFBlChMaQ/edit?gid=166502164#gid=166502164"
     }
   ]
 }
