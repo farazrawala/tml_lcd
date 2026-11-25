@@ -9,7 +9,7 @@ export function SlideEmployeesV12({ slide }) {
     [BadgeDollarSign, "Yearly target", person.yearlyTarget, "Achieved", person.yearlyAchieved],
   ]
   return (
-    <section className="relative grid h-full w-full grid-cols-[1.4fr_0.7fr] items-center gap-[3vw] overflow-hidden bg-[#071a3a] px-[4vw] py-[6vh] text-white">
+    <section className="relative grid h-full w-full grid-cols-[1.05fr_0.95fr] items-center gap-[2vw] overflow-hidden bg-[#071a3a] px-[4vw] py-[4vh] text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_45%,rgba(56,189,248,0.16),transparent_28%)]" />
       <div className="relative z-10 min-w-0">
         <img src="/tml-logo.svg" alt="TML Global" className="h-[clamp(7rem,16vh,11rem)] w-auto" />
@@ -35,7 +35,7 @@ export function SlideEmployeesV12({ slide }) {
         <img
           src={person.image ? slideImageUrl(person.image) : "/default-employee.png"}
           alt={person.name || "Employee"}
-          className="size-[min(42vh,28vw)] rounded-full border-[10px] border-white/90 object-cover shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+          className="size-[min(70vh,38vw)] rounded-full border-[10px] border-white/90 object-cover shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
         />
         <div className="mt-[-2.5rem] w-[min(22vw,320px)] rounded-2xl bg-black px-6 py-4 text-center shadow-xl">
           <p className="font-heading truncate text-[clamp(1.3rem,1.8vw,2rem)] font-extrabold">{person.name || "Employee"}</p>
