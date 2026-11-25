@@ -9,6 +9,7 @@ import { SlideEmployeesV2, SlideEmployeesV3, SlideEmployeesV4 } from "./SlideEmp
 import { SlideEmployeesV5, SlideEmployeesV6, SlideEmployeesV7 } from "./SlideEmployeesPremium"
 import { SlideEmployeesV9 } from "./SlideEmployeesV9"
 import { SlideEmployeesV11 } from "./SlideEmployeesV11"
+import { SlideEmployeesV12 } from "./SlideEmployeesV12"
 import { SlideProgress } from "./SlideProgress"
 import { SlideLatestArrivals } from "./SlideLatestArrivals"
 import { SlideOffers } from "./SlideOffers"
@@ -28,12 +29,13 @@ export function Slideshow() {
   const slides = config.slides
   const displaySlides = slides.flatMap((raw) => {
     const slide = applySheet(raw, sheetEmployees)
-    if (slide.type !== "employees-v8" && slide.type !== "employees-v9" && slide.type !== "employees-v11") return [slide]
+    const pageSize = slide.type === "employees-v12" ? 1 : slide.type === "employees-v8" || slide.type === "employees-v9" || slide.type === "employees-v11" ? 3 : 0
+    if (!pageSize) return [slide]
     const people = slide.employees || []
-    if (people.length <= 3) return [slide]
+    if (people.length <= pageSize) return [slide]
     const pages = []
-    for (let start = 0; start < people.length; start += 3) {
-      pages.push({ ...slide, id: `${slide.id}-p${start / 3}`, employees: people.slice(start, start + 3) })
+    for (let start = 0; start < people.length; start += pageSize) {
+      pages.push({ ...slide, id: `${slide.id}-p${start / pageSize}`, employees: people.slice(start, start + pageSize) })
     }
     return pages
   })
@@ -155,6 +157,7 @@ export function Slideshow() {
     if (slide.type === "employees-v8") return <SlideEmployeesV1 key={slide.id} slide={slide} perRow={3} />
     if (slide.type === "employees-v9") return <SlideEmployeesV9 key={slide.id} slide={slide} />
     if (slide.type === "employees-v11") return <SlideEmployeesV11 key={slide.id} slide={slide} />
+    if (slide.type === "employees-v12") return <SlideEmployeesV12 key={slide.id} slide={slide} />
     return <SlideGallery key={slide.id} slide={slide} imageMs={config.imageMs} plain={slide.type === "fullscreen"} />
   })
 

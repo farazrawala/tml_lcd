@@ -7,7 +7,7 @@ import { defineConfig } from "vite"
 const imageDir = path.resolve("public/slides/images")
 const slidesFile = path.resolve("public/slides/slides.json")
 const allowed = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"])
-const slideTypes = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11"])
+const slideTypes = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12"])
 
 function safeName(raw) {
   const base = path.basename(String(raw || "")).replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/^-+/, "")

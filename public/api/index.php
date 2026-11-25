@@ -5,7 +5,7 @@ $root = dirname(__DIR__);
 $slidesFile = $root . "/slides/slides.json";
 $imageDir = $root . "/slides/images";
 $allowed = ["jpg", "jpeg", "png", "webp", "gif", "svg"];
-$types = ["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11"];
+$types = ["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12"];
 
 function fail($status, $message) {
   http_response_code($status);
