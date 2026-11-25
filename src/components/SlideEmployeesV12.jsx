@@ -17,8 +17,7 @@ export function SlideEmployeesV12({ slide }) {
     [BadgeDollarSign, "Yearly target", person.yearlyTarget, "Achieved", person.yearlyAchieved],
   ]
   return (
-    <section className="relative grid h-full w-full grid-cols-[1.05fr_0.95fr] items-center gap-[2vw] overflow-hidden bg-[#071a3a] px-[4vw] py-[4vh] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_45%,rgba(56,189,248,0.16),transparent_28%)]" />
+    <section className="relative grid h-full w-full grid-cols-[1.05fr_0.95fr] items-center gap-[2vw] overflow-hidden bg-[#071a3a] bg-cover bg-center px-[4vw] py-[4vh] text-white" style={{ backgroundImage: "url(/profile-bg.jpg)" }}>
       <div className="relative z-10 min-w-0">
         <div className="flex items-center justify-between gap-6">
           <img src="/tml-logo.svg" alt="TML Global" className="h-[clamp(7rem,16vh,11rem)] w-auto" />
