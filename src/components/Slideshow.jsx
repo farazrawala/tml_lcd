@@ -9,6 +9,7 @@ import { SlideEmployeesV2, SlideEmployeesV3, SlideEmployeesV4 } from "./SlideEmp
 import { SlideEmployeesV5, SlideEmployeesV6, SlideEmployeesV7 } from "./SlideEmployeesPremium"
 import { SlideEmployeesV9 } from "./SlideEmployeesV9"
 import { SlideEmployeesV11 } from "./SlideEmployeesV11"
+import { SlideProgress } from "./SlideProgress"
 import { SlideLatestArrivals } from "./SlideLatestArrivals"
 import { SlideOffers } from "./SlideOffers"
 import { SlideWelcome } from "./SlideWelcome"
@@ -167,6 +168,11 @@ export function Slideshow() {
         <div className="slide-out absolute inset-0">{views[outgoing]}</div>
       )}
       {views[index] && <div key={displaySlides[index]?.id || index} className="slide-in absolute inset-0">{views[index]}</div>}
+      {!!views.length && (
+        <div className="absolute inset-x-0 bottom-0 z-30">
+          <SlideProgress progress={progress} />
+        </div>
+      )}
     </main>
   )
 }

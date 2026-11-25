@@ -3,8 +3,8 @@
   "imageMs": 4000,
   "slides": [
     {
-      "id": "employees-1795608943547",
-      "type": "employees-v11",
+      "id": "employees-v5-1795613266617",
+      "type": "employees-v8",
       "images": [],
       "employees": [],
       "kicker": "",
@@ -16,8 +16,8 @@
       "sheetUrl": "https://docs.google.com/spreadsheets/d/18tQXux_jBU0SdITFC87U9391ispi8pef1qsB5HE0foc/edit"
     },
     {
-      "id": "employees-v5-1795613266617",
-      "type": "employees-v8",
+      "id": "employees-1795608943547",
+      "type": "employees-v11",
       "images": [],
       "employees": [],
       "kicker": "",
