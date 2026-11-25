@@ -75,6 +75,28 @@ button {
   animation: ken 14s ease-out both;
 }
 
+@keyframes duck-walk {
+  0% { left: -40%; }
+  38% { left: 34%; }
+  62% { left: 34%; }
+  100% { left: 115%; }
+}
+
+@keyframes duck-egg {
+  0%, 42% { opacity: 0; transform: translateX(-50%) scale(0.3); }
+  58%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+.duck-walk {
+  left: -40%;
+  transform: scaleX(-1);
+  animation: duck-walk 3.4s ease-in-out infinite;
+}
+
+.duck-egg {
+  animation: duck-egg 3.4s ease-in-out infinite;
+}
+
 .slide-in {
   animation: fade-in 700ms ease both;
 }
