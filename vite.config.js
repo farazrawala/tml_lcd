@@ -126,6 +126,8 @@ function parseSheet(csv) {
   const yearlyTarget = column("yearly target")
   const yearlyAchieved = column("achieved yearly", "acheived yearly")
   const imageIndex = column("image path", "image", "photo", "picture")
+  const percentIndex = column("achieve percent", "achieved percent", "achievement percent", "percent")
+  const statusIndex = column("status")
   return lines.slice(1).map((line) => {
     const cells = splitCsv(line)
     const monthlyTargetValue = cell(cells, monthlyTarget)
@@ -143,8 +145,10 @@ function parseSheet(csv) {
       quarterly: quarterlyTargetValue,
       achieved: quarterlyAchievedValue,
       image: cell(cells, imageIndex),
+      achievePercent: cell(cells, percentIndex),
+      status: cell(cells, statusIndex),
     }
-  }).filter((row) => row.name)
+  }).filter((row) => row.name && (statusIndex < 0 || row.status.toLowerCase() === "active"))
 }
 function slideUploadPlugin() {
   const handle = (req, res, next) => {

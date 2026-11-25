@@ -84,11 +84,15 @@ function parseSheet($csv) {
   $yearlyTarget = columnIndex($headers, ["yearly target"]);
   $yearlyAchieved = columnIndex($headers, ["achieved yearly", "acheived yearly"]);
   $imageIndex = columnIndex($headers, ["image path", "image", "photo", "picture"]);
+  $percentIndex = columnIndex($headers, ["achieve percent", "achieved percent", "achievement percent", "percent"]);
+  $statusIndex = columnIndex($headers, ["status"]);
   $rows = [];
   for ($i = 1; $i < count($lines); $i++) {
     $cells = splitCsv($lines[$i]);
     $name = cellValue($cells, $nameIndex);
+    $status = cellValue($cells, $statusIndex);
     if ($name === "") continue;
+    if ($statusIndex >= 0 && strcasecmp($status, "Active") !== 0) continue;
     $monthlyTargetValue = cellValue($cells, $monthlyTarget);
     $quarterlyTargetValue = cellValue($cells, $quarterlyTarget);
     $quarterlyAchievedValue = cellValue($cells, $quarterlyAchieved);
@@ -104,6 +108,7 @@ function parseSheet($csv) {
       "quarterly" => $quarterlyTargetValue,
       "achieved" => $quarterlyAchievedValue,
       "image" => cellValue($cells, $imageIndex),
+      "achievePercent" => cellValue($cells, $percentIndex),
     ];
   }
   return $rows;
