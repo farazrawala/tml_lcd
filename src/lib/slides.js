@@ -31,7 +31,7 @@ export function slideImageUrl(name) {
   return `${IMAGE_DIR}/${value}`
 }
 
-const TYPES = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9"])
+const TYPES = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11"])
 
 export function normalizeSlides(json) {
   const slides = Array.isArray(json?.slides) ? json.slides : []

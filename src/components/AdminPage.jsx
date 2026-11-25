@@ -14,6 +14,7 @@ const LAYOUTS = [
   ["employees-v7", "Employee layout 8"],
   ["employees-v8", "Layout 1 · 3 per slide"],
   ["employees-v9", "Layout 9"],
+  ["employees-v11", "Layout 11"],
 ]
 
 const LEGACY = {
@@ -346,6 +347,7 @@ export function AdminPage() {
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v7")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add layout 8</button>
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v8")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add layout 1 · 3</button>
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v9")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add layout 9</button>
+          <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v11")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add layout 11</button>
         </div>
 
         <section className="rounded-2xl border border-white/10 p-5">

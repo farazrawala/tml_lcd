@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { SlideBrands } from "./SlideBrands"
 import { SlideContact } from "./SlideContact"
-import { SlideControls } from "./SlideControls"
 import { SlideFeaturedCars } from "./SlideFeaturedCars"
 import { SlideGallery } from "./SlideGallery"
 import { SlideEmployees } from "./SlideEmployees"
@@ -9,6 +8,7 @@ import { SlideEmployeesV1 } from "./SlideEmployeesV1"
 import { SlideEmployeesV2, SlideEmployeesV3, SlideEmployeesV4 } from "./SlideEmployeesVersions"
 import { SlideEmployeesV5, SlideEmployeesV6, SlideEmployeesV7 } from "./SlideEmployeesPremium"
 import { SlideEmployeesV9 } from "./SlideEmployeesV9"
+import { SlideEmployeesV11 } from "./SlideEmployeesV11"
 import { SlideLatestArrivals } from "./SlideLatestArrivals"
 import { SlideOffers } from "./SlideOffers"
 import { SlideWelcome } from "./SlideWelcome"
@@ -27,7 +27,7 @@ export function Slideshow() {
   const slides = config.slides
   const displaySlides = slides.flatMap((raw) => {
     const slide = applySheet(raw, sheetEmployees)
-    if (slide.type !== "employees-v8" && slide.type !== "employees-v9") return [slide]
+    if (slide.type !== "employees-v8" && slide.type !== "employees-v9" && slide.type !== "employees-v11") return [slide]
     const people = slide.employees || []
     if (people.length <= 3) return [slide]
     const pages = []
@@ -148,6 +148,7 @@ export function Slideshow() {
     if (slide.type === "employees-v7") return <SlideEmployeesV7 key={slide.id} slide={slide} />
     if (slide.type === "employees-v8") return <SlideEmployeesV1 key={slide.id} slide={slide} perRow={3} />
     if (slide.type === "employees-v9") return <SlideEmployeesV9 key={slide.id} slide={slide} />
+    if (slide.type === "employees-v11") return <SlideEmployeesV11 key={slide.id} slide={slide} />
     return <SlideGallery key={slide.id} slide={slide} imageMs={config.imageMs} plain={slide.type === "fullscreen"} />
   })
 
@@ -166,19 +167,6 @@ export function Slideshow() {
         <div className="slide-out absolute inset-0">{views[outgoing]}</div>
       )}
       {views[index] && <div key={displaySlides[index]?.id || index} className="slide-in absolute inset-0">{views[index]}</div>}
-      {!!views.length && (
-        <SlideControls
-          index={index}
-          total={views.length}
-          paused={paused}
-          progress={progress}
-          onPrev={() => goTo(indexRef.current - 1)}
-          onNext={() => goTo(indexRef.current + 1)}
-          onTogglePause={() => setPaused((value) => !value)}
-          onInteractStart={() => setInteracting(true)}
-          onInteractEnd={() => setInteracting(false)}
-        />
-      )}
     </main>
   )
 }
