@@ -99,6 +99,11 @@ export function Slideshow() {
   }, [paused, interacting, index, goTo, slides.length, config.intervalMs])
 
   useEffect(() => {
+    const timer = window.setTimeout(() => window.location.reload(), 30 * 60 * 1000)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
     const onKey = (event) => {
       if (event.key === "ArrowRight") {
         event.preventDefault()
