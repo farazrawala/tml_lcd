@@ -192,7 +192,16 @@ function slideUploadPlugin() {
         }
         const data = readScreens()
         const reload = Boolean(data[id]?.reload)
-        data[id] = { id, path: String(body.path || "/").slice(0, 80), seen: Date.now(), reload: false }
+        const started = Number(body.started) || data[id]?.started || Date.now()
+        data[id] = {
+          id,
+          path: String(body.path || "/").slice(0, 80),
+          url: String(body.url || "").slice(0, 200),
+          browser: String(body.browser || "").slice(0, 80),
+          started,
+          seen: Date.now(),
+          reload: false,
+        }
         writeScreens(data)
         sendJson(res, 200, { ok: true, reload })
       }).catch(() => sendJson(res, 400, { ok: false }))

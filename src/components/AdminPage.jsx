@@ -49,6 +49,14 @@ function blankSlide(type = "fullscreen") {
   }
 }
 
+function sessionAge(started) {
+  const minutes = Math.max(0, Math.floor((Date.now() - Number(started || Date.now())) / 60000))
+  if (minutes < 1) return "just now"
+  if (minutes < 60) return `${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  return `${hours} hr ${minutes % 60} min`
+}
+
 function Screens() {
   const [screens, setScreens] = useState([])
 
@@ -88,7 +96,10 @@ function Screens() {
       <ul className="mt-3 flex flex-col gap-2">
         {screens.map((screen) => (
           <li key={screen.id} className="flex items-center justify-between gap-3 rounded-xl bg-black/40 px-4 py-3">
-            <span className="truncate font-semibold">{screen.path || "/"}</span>
+            <div className="min-w-0">
+              <p className="truncate font-semibold">{screen.url || screen.path || "/"}</p>
+              <p className="mt-1 text-sm text-white/60">{screen.browser || "Browser"} · open {sessionAge(screen.started)}</p>
+            </div>
             <button type="button" onClick={() => reload(screen.id)} className="h-10 shrink-0 rounded-full border border-white/20 px-4 font-semibold">Reload</button>
           </li>
         ))}

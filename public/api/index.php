@@ -151,7 +151,16 @@ if ($path === "/api/screens" && $method === "POST") {
   if ($id === "") fail(400, "Missing screen.");
   $data = screenStore();
   $reload = !empty($data[$id]["reload"]);
-  $data[$id] = ["id" => $id, "path" => substr((string) ($body["path"] ?? "/"), 0, 80), "seen" => (int) (microtime(true) * 1000), "reload" => false];
+  $started = (int) ($body["started"] ?? ($data[$id]["started"] ?? (microtime(true) * 1000)));
+  $data[$id] = [
+    "id" => $id,
+    "path" => substr((string) ($body["path"] ?? "/"), 0, 80),
+    "url" => substr((string) ($body["url"] ?? ""), 0, 200),
+    "browser" => substr((string) ($body["browser"] ?? ""), 0, 80),
+    "started" => $started,
+    "seen" => (int) (microtime(true) * 1000),
+    "reload" => false,
+  ];
   saveScreens($data);
   echo json_encode(["ok" => true, "reload" => $reload]);
   exit;
