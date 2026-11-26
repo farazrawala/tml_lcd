@@ -87,6 +87,127 @@ button {
   58%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
 }
 
+/* egg jump and crack animation, paused
+@keyframes egg-jump {
+  0%, 6% { transform: translateY(0); opacity: 1; }
+  10% { transform: translateY(-14px); opacity: 1; }
+  16%, 22% { transform: translateY(0); opacity: 1; }
+  27% { transform: translateY(-14px); opacity: 1; }
+  33%, 39% { transform: translateY(0); opacity: 1; }
+  44% { transform: translateY(-14px); opacity: 1; }
+  50%, 56% { transform: translateY(0); opacity: 1; }
+  62%, 100% { transform: translateY(0); opacity: 0; }
+}
+
+@keyframes shell-left {
+  0%, 56% { opacity: 0; transform: translate(0, 0) rotate(0); }
+  68%, 90% { opacity: 1; transform: translate(-8px, 2px) rotate(-18deg); }
+  100% { opacity: 0; }
+}
+
+@keyframes shell-right {
+  0%, 56% { opacity: 0; transform: translate(0, 0) rotate(0); }
+  68%, 90% { opacity: 1; transform: translate(8px, 2px) rotate(18deg); }
+  100% { opacity: 0; }
+}
+
+@keyframes egg-spill {
+  0%, 58% { opacity: 0; transform: translateY(-6px) scale(0.4); }
+  74%, 90% { opacity: 1; transform: translateY(8px) scale(1); }
+  100% { opacity: 0; }
+}
+
+.egg-jump {
+  animation: egg-jump 4.4s ease-in-out infinite;
+}
+
+.egg-shell {
+  position: absolute;
+  top: 18%;
+  width: 46%;
+  height: 58%;
+  background: #f7f4ef;
+  border: 2px solid #e4ddd2;
+}
+
+.egg-shell-left {
+  left: 4%;
+  border-radius: 70% 20% 40% 70%;
+  animation: shell-left 4.4s ease-in-out infinite;
+}
+
+.egg-shell-right {
+  right: 4%;
+  border-radius: 20% 70% 70% 40%;
+  animation: shell-right 4.4s ease-in-out infinite;
+}
+
+.egg-white {
+  position: absolute;
+  left: 18%;
+  bottom: 8%;
+  width: 64%;
+  height: 38%;
+  border-radius: 50%;
+  background: #fff;
+  animation: egg-spill 4.4s ease-out infinite;
+}
+
+.egg-yolk {
+  position: absolute;
+  left: 34%;
+  bottom: 16%;
+  width: 32%;
+  height: 28%;
+  border-radius: 50%;
+  background: #ffd23a;
+  animation: egg-spill 4.4s ease-out infinite;
+}
+*/
+
+@keyframes laying-duck {
+  0% { left: -40%; transform: scaleX(-1) translateY(0); }
+  24% { left: 50%; transform: translateX(-50%) scaleX(-1) translateY(0); }
+  34% { left: 50%; transform: translateX(-50%) scaleX(-1) translateY(7px); }
+  48% { left: 50%; transform: translateX(-50%) scaleX(-1) translateY(7px); }
+  58% { left: 50%; transform: translateX(-50%) scaleX(-1) translateY(0); }
+  100% { left: 120%; transform: scaleX(-1) translateY(0); }
+}
+
+@keyframes laid-egg {
+  0%, 36% { opacity: 0; }
+  48%, 100% { opacity: 1; }
+}
+
+@keyframes egg-hop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.laying-duck {
+  position: absolute;
+  bottom: 0.35rem;
+  left: -40%;
+  font-size: clamp(3.2rem, 5.6vh, 4.6rem);
+  line-height: 1;
+  animation: laying-duck 5.5s ease-in-out infinite;
+}
+
+.laid-egg {
+  position: absolute;
+  bottom: 0.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(2rem, 3.4vh, 2.8rem);
+  line-height: 1;
+  animation: laid-egg 5.5s ease-out infinite;
+}
+
+.egg-hop {
+  display: inline-block;
+  animation: egg-hop 0.45s ease-in-out infinite;
+}
+
 .duck-walk {
   left: -40%;
   transform: scaleX(-1);

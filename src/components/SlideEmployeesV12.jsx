@@ -19,7 +19,7 @@ export function SlideEmployeesV12({ slide }) {
   return (
     <section className="relative grid h-full w-full grid-cols-[1.05fr_0.95fr] items-center gap-[2vw] overflow-hidden bg-[#071a3a] bg-cover bg-center px-[4vw] py-[4vh] text-white" style={{ backgroundImage: "url(/profile-bg.jpg?v=2)" }}>
       <div className="relative z-10 min-w-0">
-        <img src="/tml-logo.svg" alt="TML Global" className="-ml-[clamp(4rem,8.7vh,6rem)] h-[clamp(10rem,22vh,15rem)] w-auto" />
+        <img src="/tml-logo.svg" alt="TML Global" className="-mt-[3vh] -ml-[clamp(4rem,8.7vh,6rem)] h-[clamp(10rem,22vh,15rem)] w-auto" />
         <h2 className="font-heading mt-4 max-w-[14ch] text-[clamp(2.4rem,4.4vw,5rem)] leading-[0.95] font-extrabold uppercase">{person.name || "Employee"}</h2>
         {!!slide.supporting && <p className="mt-5 max-w-xl text-[clamp(1rem,1.3vw,1.35rem)] leading-relaxed text-white/75">{slide.supporting}</p>}
         <div className="mt-[5vh] grid grid-cols-3 gap-x-10 gap-y-4">
@@ -29,8 +29,11 @@ export function SlideEmployeesV12({ slide }) {
               <p className="mt-2 text-[clamp(1rem,1.25vw,1.55rem)] font-bold tracking-[0.06em] text-white uppercase">{label}</p>
               <p className="font-heading text-[clamp(2.4rem,3.3vw,4.2rem)] leading-none font-extrabold text-[#ff9a3c]">{money(target)}</p>
               <p className="mt-3 text-[clamp(1.15rem,1.55vw,1.9rem)] font-bold tracking-[0.12em] text-white uppercase">{achievedLabel}</p>
-              {isZeroAchieved(achieved) && String(achieved ?? "").trim() !== "" ? (
-                <img src="/egg-broken.gif?v=6" alt="Achieved is zero" className="mt-1 h-[clamp(1.6rem,3vh,2.2rem)] w-auto" />
+              {/^[$£\s\-–—]*$/.test(String(achieved ?? "")) || isZeroAchieved(achieved) ? (
+                <span className="duck-scene relative mx-auto block h-[clamp(5.4rem,8vh,7rem)] w-[clamp(8rem,12vw,11rem)] overflow-hidden" role="img" aria-label="Achieved is zero">
+                  <span className="laid-egg"><span className="egg-hop">🥚</span></span>
+                  <span className="laying-duck">🦆</span>
+                </span>
               ) : (
                 <p className="font-heading text-[clamp(2.4rem,3.3vw,4.2rem)] leading-none font-extrabold text-emerald-300">{money(achieved)}</p>
               )}
