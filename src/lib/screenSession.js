@@ -31,7 +31,15 @@ export function ScreenSession() {
       fetch("/api/screens", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, path: location.pathname, url, browser: browserLabel(), started }),
+        body: JSON.stringify({
+          id,
+          path: location.pathname,
+          url,
+          browser: browserLabel(),
+          started,
+          screen: `${window.screen.width}×${window.screen.height}`,
+          viewport: `${window.innerWidth}×${window.innerHeight}`,
+        }),
       })
         .then((res) => (res.ok ? res.json() : null))
         .then((json) => {

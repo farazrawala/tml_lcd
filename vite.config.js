@@ -198,6 +198,8 @@ function slideUploadPlugin() {
           path: String(body.path || "/").slice(0, 80),
           url: String(body.url || "").slice(0, 200),
           browser: String(body.browser || "").slice(0, 80),
+          screen: String(body.screen || "").slice(0, 20),
+          viewport: String(body.viewport || "").slice(0, 20),
           started,
           seen: Date.now(),
           reload: false,

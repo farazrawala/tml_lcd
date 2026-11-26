@@ -157,6 +157,8 @@ if ($path === "/api/screens" && $method === "POST") {
     "path" => substr((string) ($body["path"] ?? "/"), 0, 80),
     "url" => substr((string) ($body["url"] ?? ""), 0, 200),
     "browser" => substr((string) ($body["browser"] ?? ""), 0, 80),
+    "screen" => substr((string) ($body["screen"] ?? ""), 0, 20),
+    "viewport" => substr((string) ($body["viewport"] ?? ""), 0, 20),
     "started" => $started,
     "seen" => (int) (microtime(true) * 1000),
     "reload" => false,

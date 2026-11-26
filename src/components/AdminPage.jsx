@@ -98,7 +98,7 @@ function Screens() {
           <li key={screen.id} className="flex items-center justify-between gap-3 rounded-xl bg-black/40 px-4 py-3">
             <div className="min-w-0">
               <p className="truncate font-semibold">{screen.url || screen.path || "/"}</p>
-              <p className="mt-1 text-sm text-white/60">{screen.browser || "Browser"} · open {sessionAge(screen.started)}</p>
+              <p className="mt-1 text-sm text-white/60">{screen.browser || "Browser"} · screen {screen.screen || "—"} · window {screen.viewport || "—"} · open {sessionAge(screen.started)}</p>
             </div>
             <button type="button" onClick={() => reload(screen.id)} className="h-10 shrink-0 rounded-full border border-white/20 px-4 font-semibold">Reload</button>
           </li>
