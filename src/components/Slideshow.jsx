@@ -10,6 +10,7 @@ import { SlideEmployeesV5, SlideEmployeesV6, SlideEmployeesV7 } from "./SlideEmp
 import { SlideEmployeesV9 } from "./SlideEmployeesV9"
 import { SlideEmployeesV11 } from "./SlideEmployeesV11"
 import { SlideEmployeesV12 } from "./SlideEmployeesV12"
+import { SlideVideo } from "./SlideVideo"
 import { SlideProgress } from "./SlideProgress"
 import { SlideLatestArrivals } from "./SlideLatestArrivals"
 import { SlideOffers } from "./SlideOffers"
@@ -81,7 +82,7 @@ export function Slideshow() {
       elapsed.current = 0
       resetElapsed.current = false
     }
-    if (paused || interacting) return undefined
+    if (paused || interacting || displaySlides[index]?.type === "video") return undefined
     const stamp = performance.now()
     let frame = 0
     const tick = (now) => {
@@ -158,6 +159,7 @@ export function Slideshow() {
     if (slide.type === "employees-v9") return <SlideEmployeesV9 key={slide.id} slide={slide} />
     if (slide.type === "employees-v11") return <SlideEmployeesV11 key={slide.id} slide={slide} />
     if (slide.type === "employees-v12") return <SlideEmployeesV12 key={slide.id} slide={slide} />
+    if (slide.type === "video") return <SlideVideo key={slide.id} slide={slide} onEnded={() => goTo(indexRef.current + 1)} />
     return <SlideGallery key={slide.id} slide={slide} imageMs={config.imageMs} plain={slide.type === "fullscreen"} />
   })
 

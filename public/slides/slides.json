@@ -1,7 +1,20 @@
 {
   "intervalMs": 12000,
-  "imageMs": 4000,
+  "imageMs": 5000,
   "slides": [
+    {
+      "id": "video-sales",
+      "type": "video",
+      "images": [],
+      "employees": [],
+      "kicker": "",
+      "title": "",
+      "subtitle": "",
+      "supporting": "",
+      "cta": "",
+      "footer": "",
+      "sheetUrl": ""
+    },
     {
       "id": "employees-1795608943547",
       "type": "employees-v12",
@@ -14,21 +27,6 @@
       "cta": "",
       "footer": "",
       "sheetUrl": "https://docs.google.com/spreadsheets/d/1kaMqD6MM9EodUjkBW7kj5MqtFBlChMaQ/edit?gid=166502164#gid=166502164"
-    },
-    {
-      "id": "fullscreen-1795623485036",
-      "type": "fullscreen",
-      "images": [
-        "WhatsApp-Image-2026-11-25-at-9.17.37-PM.jpeg"
-      ],
-      "employees": [],
-      "kicker": "",
-      "title": "",
-      "subtitle": "",
-      "supporting": "",
-      "cta": "",
-      "footer": "",
-      "sheetUrl": ""
     }
   ]
 }

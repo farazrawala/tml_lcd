@@ -4,8 +4,8 @@ header("Content-Type: application/json");
 $root = dirname(__DIR__);
 $slidesFile = $root . "/slides/slides.json";
 $imageDir = $root . "/slides/images";
-$allowed = ["jpg", "jpeg", "png", "webp", "gif", "svg"];
-$types = ["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12"];
+$allowed = ["jpg", "jpeg", "png", "webp", "gif", "svg", "mp4", "webm"];
+$types = ["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12", "video"];
 
 function fail($status, $message) {
   http_response_code($status);
@@ -116,6 +116,59 @@ function parseSheet($csv) {
 
 $path = parse_url($_SERVER["REQUEST_URI"] ?? "/", PHP_URL_PATH);
 $method = $_SERVER["REQUEST_METHOD"] ?? "GET";
+$screensFile = $root . "/data/screens.json";
+
+function screenStore() {
+  global $screensFile;
+  if (!is_file($screensFile)) return [];
+  $data = json_decode(file_get_contents($screensFile), true);
+  return is_array($data) ? $data : [];
+}
+
+function saveScreens($data) {
+  global $screensFile;
+  if (!is_dir(dirname($screensFile))) mkdir(dirname($screensFile), 0775, true);
+  file_put_contents($screensFile, json_encode($data));
+}
+
+function liveScreens($data) {
+  $now = (int) (microtime(true) * 1000);
+  $list = [];
+  foreach ($data as $screen) {
+    if (is_array($screen) && $now - (int) ($screen["seen"] ?? 0) < 12000) $list[] = $screen;
+  }
+  return $list;
+}
+
+if ($path === "/api/screens" && $method === "GET") {
+  echo json_encode(["ok" => true, "screens" => liveScreens(screenStore())]);
+  exit;
+}
+
+if ($path === "/api/screens" && $method === "POST") {
+  $body = json_decode(file_get_contents("php://input"), true);
+  $id = substr(preg_replace("/[^a-zA-Z0-9-]/", "", (string) ($body["id"] ?? "")), 0, 40);
+  if ($id === "") fail(400, "Missing screen.");
+  $data = screenStore();
+  $reload = !empty($data[$id]["reload"]);
+  $data[$id] = ["id" => $id, "path" => substr((string) ($body["path"] ?? "/"), 0, 80), "seen" => (int) (microtime(true) * 1000), "reload" => false];
+  saveScreens($data);
+  echo json_encode(["ok" => true, "reload" => $reload]);
+  exit;
+}
+
+if ($path === "/api/screens/reload" && $method === "POST") {
+  $body = json_decode(file_get_contents("php://input"), true);
+  $data = screenStore();
+  if (!empty($body["all"])) {
+    foreach ($data as $key => $screen) $data[$key]["reload"] = true;
+  } elseif (!empty($body["id"]) && isset($data[$body["id"]])) {
+    $data[$body["id"]]["reload"] = true;
+  }
+  saveScreens($data);
+  echo json_encode(["ok" => true]);
+  exit;
+}
 
 if ($path === "/api/sheet" && $method === "GET") {
   $csvUrl = sheetCsvUrl($_GET["url"] ?? "");
@@ -213,15 +266,13 @@ if ($path === "/api/images" && $method === "DELETE") {
 if ($path === "/api/upload" && $method === "POST") {
   $name = safeName($_GET["name"] ?? "");
   if ($name === "") fail(400, "Use a jpg, png, webp, gif, or svg file.");
-  if (!is_dir($imageDir)) mkdir($imageDir, 0775, true);
-  $file = $name;
-  if (is_file($imageDir . "/" . $file)) {
-    $ext = pathinfo($name, PATHINFO_EXTENSION);
-    $file = pathinfo($name, PATHINFO_FILENAME) . "-" . time() . "." . $ext;
-  }
+  $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+  $folder = in_array($ext, ["mp4", "webm"], true) ? $root . "/videos" : $imageDir;
+  if (!is_dir($folder)) mkdir($folder, 0775, true);
+  $file = pathinfo($name, PATHINFO_FILENAME) . "-" . time() . "." . $ext;
   $body = file_get_contents("php://input");
-  if ($body === false || strlen($body) > 20 * 1024 * 1024) fail(413, "Image must be 20 MB or smaller.");
-  if (file_put_contents($imageDir . "/" . $file, $body) === false) fail(500, "Upload failed.");
+  if ($body === false || strlen($body) > 80 * 1024 * 1024) fail(413, "File must be 80 MB or smaller.");
+  if (file_put_contents($folder . "/" . $file, $body) === false) fail(500, "Upload failed.");
   echo json_encode(["ok" => true, "file" => $file, "folder" => "public/slides/images"]);
   exit;
 }

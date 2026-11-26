@@ -5,9 +5,12 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
 const imageDir = path.resolve("public/slides/images")
+const videoDir = path.resolve("public/videos")
 const slidesFile = path.resolve("public/slides/slides.json")
-const allowed = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"])
-const slideTypes = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12"])
+const screensFile = path.resolve("data/screens.json")
+const allowed = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".mp4", ".webm"])
+const videoExt = new Set([".mp4", ".webm"])
+const slideTypes = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12", "video"])
 
 function safeName(raw) {
   const base = path.basename(String(raw || "")).replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/^-+/, "")
@@ -150,11 +153,60 @@ function parseSheet(csv) {
     }
   }).filter((row) => row.name && (statusIndex < 0 || row.status.toLowerCase() === "active"))
 }
+function readScreens() {
+  try {
+    return JSON.parse(fs.readFileSync(screensFile, "utf8"))
+  } catch {
+    return {}
+  }
+}
+
+function writeScreens(data) {
+  fs.mkdirSync(path.dirname(screensFile), { recursive: true })
+  fs.writeFileSync(screensFile, JSON.stringify(data))
+}
+
+function liveScreens(data) {
+  const now = Date.now()
+  return Object.values(data).filter((screen) => now - screen.seen < 12000).sort((a, b) => String(a.path).localeCompare(String(b.path)))
+}
+
 function slideUploadPlugin() {
   const handle = (req, res, next) => {
     const url = new URL(req.url || "/", "http://localhost")
     if (!url.pathname.startsWith("/api/")) {
       next()
+      return
+    }
+    if (url.pathname === "/api/screens" && req.method === "GET") {
+      sendJson(res, 200, { ok: true, screens: liveScreens(readScreens()) })
+      return
+    }
+    if (url.pathname === "/api/screens" && req.method === "POST") {
+      readBody(req, 10000).then((buffer) => {
+        const body = JSON.parse(buffer.toString("utf8") || "{}")
+        const id = String(body.id || "").replace(/[^a-zA-Z0-9-]/g, "").slice(0, 40)
+        if (!id) {
+          sendJson(res, 400, { ok: false })
+          return
+        }
+        const data = readScreens()
+        const reload = Boolean(data[id]?.reload)
+        data[id] = { id, path: String(body.path || "/").slice(0, 80), seen: Date.now(), reload: false }
+        writeScreens(data)
+        sendJson(res, 200, { ok: true, reload })
+      }).catch(() => sendJson(res, 400, { ok: false }))
+      return
+    }
+    if (url.pathname === "/api/screens/reload" && req.method === "POST") {
+      readBody(req, 10000).then((buffer) => {
+        const body = JSON.parse(buffer.toString("utf8") || "{}")
+        const data = readScreens()
+        if (body.all) Object.values(data).forEach((screen) => { screen.reload = true })
+        else if (data[body.id]) data[body.id].reload = true
+        writeScreens(data)
+        sendJson(res, 200, { ok: true })
+      }).catch(() => sendJson(res, 400, { ok: false }))
       return
     }
     if (url.pathname === "/api/sheet" && req.method === "GET") {
@@ -215,20 +267,18 @@ function slideUploadPlugin() {
       res.end(JSON.stringify({ ok: false, error: "Use a jpg, png, webp, gif, or svg file." }))
       return
     }
-    fs.mkdirSync(imageDir, { recursive: true })
-    let file = name
-    if (fs.existsSync(path.join(imageDir, file))) {
-      const ext = path.extname(name)
-      file = `${path.basename(name, ext)}-${Date.now()}${ext}`
-    }
+    const ext = path.extname(name)
+    const folder = videoExt.has(ext) ? videoDir : imageDir
+    fs.mkdirSync(folder, { recursive: true })
+    const file = `${path.basename(name, ext)}-${Date.now()}${ext}`
     const chunks = []
     let size = 0
     req.on("data", (chunk) => {
       size += chunk.length
-      if (size > 20 * 1024 * 1024) {
+      if (size > 80 * 1024 * 1024) {
         res.statusCode = 413
         res.setHeader("Content-Type", "application/json")
-        res.end(JSON.stringify({ ok: false, error: "Image must be 20 MB or smaller." }))
+        res.end(JSON.stringify({ ok: false, error: "File must be 80 MB or smaller." }))
         req.destroy()
         return
       }
@@ -236,7 +286,7 @@ function slideUploadPlugin() {
     })
     req.on("end", () => {
       if (res.writableEnded) return
-      fs.writeFileSync(path.join(imageDir, file), Buffer.concat(chunks))
+      fs.writeFileSync(path.join(folder, file), Buffer.concat(chunks))
       res.setHeader("Content-Type", "application/json")
       res.end(JSON.stringify({ ok: true, file, folder: "public/slides/images" }))
     })

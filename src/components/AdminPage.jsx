@@ -16,6 +16,7 @@ const LAYOUTS = [
   ["employees-v9", "Layout 9"],
   ["employees-v11", "Layout 11"],
   ["employees-v12", "Version 1 · 1 profile"],
+  ["video", "Full video"],
 ]
 
 const LEGACY = {
@@ -46,6 +47,54 @@ function blankSlide(type = "fullscreen") {
     cta: "",
     footer: "",
   }
+}
+
+function Screens() {
+  const [screens, setScreens] = useState([])
+
+  useEffect(() => {
+    let stopped = false
+    const load = () => {
+      fetch("/api/screens")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (!stopped) setScreens(json?.screens || [])
+        })
+        .catch(() => {})
+    }
+    load()
+    const timer = window.setInterval(load, 4000)
+    return () => {
+      stopped = true
+      window.clearInterval(timer)
+    }
+  }, [])
+
+  function reload(id) {
+    fetch("/api/screens/reload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(id ? { id } : { all: true }),
+    }).catch(() => {})
+  }
+
+  return (
+    <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-heading text-xl font-extrabold">Active screens</h2>
+        <button type="button" onClick={() => reload()} className="h-11 rounded-full bg-[#FF5722] px-5 font-semibold">Reload all</button>
+      </div>
+      {!screens.length && <p className="mt-3 text-white/60">No screens are open.</p>}
+      <ul className="mt-3 flex flex-col gap-2">
+        {screens.map((screen) => (
+          <li key={screen.id} className="flex items-center justify-between gap-3 rounded-xl bg-black/40 px-4 py-3">
+            <span className="truncate font-semibold">{screen.path || "/"}</span>
+            <button type="button" onClick={() => reload(screen.id)} className="h-10 shrink-0 rounded-full border border-white/20 px-4 font-semibold">Reload</button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
 }
 
 export function AdminPage() {
@@ -145,7 +194,8 @@ export function AdminPage() {
       if (!res.ok || !json.ok) throw new Error(json.error || "Upload failed")
       names.push(json.file)
     }
-    setFiles((current) => [...new Set([...names, ...current])].sort())
+    const images = names.filter((name) => !/\.(mp4|webm)$/i.test(name))
+    setFiles((current) => [...new Set([...images, ...current])].sort())
     return names
   }
 
@@ -156,7 +206,7 @@ export function AdminPage() {
       ...current,
       slides: current.slides.map((slide, i) => {
         if (i !== index) return slide
-        if (personIndex == null) return { ...slide, images: [...slide.images, ...names] }
+        if (personIndex == null) return { ...slide, images: slide.type === "video" ? names.slice(0, 1) : [...slide.images, ...names] }
         return {
           ...slide,
           employees: (slide.employees || []).map((person, n) => (n === personIndex ? { ...person, image: names[0] || person.image } : person)),
@@ -217,6 +267,8 @@ export function AdminPage() {
           </div>
           <a href="/lcd-display" className="rounded-full bg-white/10 px-5 py-3 font-semibold hover:bg-white/20">Open display</a>
         </header>
+
+        <Screens />
 
         <section className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 sm:grid-cols-2">
           <label className="block text-sm text-white/70">Slide time (seconds)
@@ -309,6 +361,17 @@ export function AdminPage() {
             </div>
             )}
 
+            {slide.type === "video" ? (
+              <div className="mt-4">
+                <label className="flex h-28 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/25 text-sm text-white/70">
+                  <Plus className="size-5" />
+                  Upload video
+                  <input type="file" accept="video/mp4,video/webm,.mp4,.webm" className="hidden" onChange={(event) => { upload(index, event.target.files).catch((err) => setError(err.message)); event.target.value = "" }} />
+                </label>
+                {!!slide.images[0] && <p className="mt-2 text-sm text-white/70">{slide.images[0]}</p>}
+              </div>
+            ) : (
+            <>
             <div className="mt-4 flex flex-wrap gap-3">
               {slide.images.map((image) => (
                 <figure key={image} className="w-36">
@@ -333,6 +396,8 @@ export function AdminPage() {
             )}
             </>
             )}
+            </>
+            )}
           </article>
         ))}
 
@@ -350,6 +415,7 @@ export function AdminPage() {
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v9")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add layout 9</button>
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v11")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add layout 11</button>
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v12")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add version 1 · 1 profile</button>
+          <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("video")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add full video</button>
         </div>
 
         <section className="rounded-2xl border border-white/10 p-5">
