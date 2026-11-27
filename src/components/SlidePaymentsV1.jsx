@@ -36,20 +36,19 @@ function celebrate() {
     origin: { y: 0.6 },
     zIndex: 100,
   })
-  const duration = 9000
+  const duration = 3500
   const end = Date.now() + duration
-  const defaults = { startVelocity: 42, spread: 360, ticks: 80, zIndex: 100, scalar: 1.15 }
+  const defaults = { startVelocity: 28, spread: 360, ticks: 40, zIndex: 100 }
   const timer = window.setInterval(() => {
     const timeLeft = end - Date.now()
     if (timeLeft <= 0) {
       window.clearInterval(timer)
       return
     }
-    const particleCount = 90 * (timeLeft / duration)
-    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.05, 0.25), y: Math.random() - 0.2 } })
-    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.38, 0.62), y: Math.random() - 0.2 } })
-    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.75, 0.95), y: Math.random() - 0.2 } })
-  }, 160)
+    const particleCount = 24 * (timeLeft / duration)
+    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.15, 0.35), y: Math.random() - 0.2 } })
+    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.65, 0.85), y: Math.random() - 0.2 } })
+  }, 450)
   return { timer, audio }
 }
 
@@ -83,6 +82,7 @@ export function SlidePaymentsV1({ slide }) {
     const { timer, audio } = celebrate()
     return () => {
       window.clearInterval(timer)
+      confetti.reset()
       audio.pause()
     }
   }, [count])
