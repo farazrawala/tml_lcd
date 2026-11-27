@@ -10,6 +10,7 @@ import { SlideEmployeesV5, SlideEmployeesV6, SlideEmployeesV7 } from "./SlideEmp
 import { SlideEmployeesV9 } from "./SlideEmployeesV9"
 import { SlideEmployeesV11 } from "./SlideEmployeesV11"
 import { SlideEmployeesV12 } from "./SlideEmployeesV12"
+import { SlidePaymentsV1 } from "./SlidePaymentsV1"
 import { SlideVideo } from "./SlideVideo"
 import { SlideProgress } from "./SlideProgress"
 import { SlideLatestArrivals } from "./SlideLatestArrivals"
@@ -30,7 +31,7 @@ export function Slideshow() {
   const slides = config.slides
   const displaySlides = slides.flatMap((raw) => {
     const slide = applySheet(raw, sheetEmployees)
-    const pageSize = slide.type === "employees-v12" ? 1 : slide.type === "employees-v8" || slide.type === "employees-v9" || slide.type === "employees-v11" ? 3 : 0
+    const pageSize = slide.type === "employees-v12" || slide.type === "payments-v1" ? 1 : slide.type === "employees-v8" || slide.type === "employees-v9" || slide.type === "employees-v11" ? 3 : 0
     if (!pageSize) return [slide]
     const people = slide.employees || []
     if (people.length <= pageSize) return [slide]
@@ -84,9 +85,11 @@ export function Slideshow() {
     }
     if (paused || interacting || displaySlides[index]?.type === "video") return undefined
     const stamp = performance.now()
+    const ownSeconds = Number(displaySlides[index]?.seconds)
+    const slideMs = ownSeconds > 0 ? ownSeconds * 1000 : config.intervalMs
     let frame = 0
     const tick = (now) => {
-      const ratio = Math.min(1, (elapsed.current + (now - stamp)) / config.intervalMs)
+      const ratio = Math.min(1, (elapsed.current + (now - stamp)) / slideMs)
       setProgress(ratio)
       if (ratio >= 1) {
         goTo(indexRef.current + 1)
@@ -99,7 +102,7 @@ export function Slideshow() {
       if (!resetElapsed.current) elapsed.current += performance.now() - stamp
       cancelAnimationFrame(frame)
     }
-  }, [paused, interacting, index, goTo, slides.length, config.intervalMs])
+  }, [paused, interacting, index, goTo, slides.length, config.intervalMs, displaySlides[index]?.seconds, displaySlides[index]?.type])
 
   useEffect(() => {
     const timer = window.setTimeout(() => window.location.reload(), 30 * 60 * 1000)
@@ -159,6 +162,7 @@ export function Slideshow() {
     if (slide.type === "employees-v9") return <SlideEmployeesV9 key={slide.id} slide={slide} />
     if (slide.type === "employees-v11") return <SlideEmployeesV11 key={slide.id} slide={slide} />
     if (slide.type === "employees-v12") return <SlideEmployeesV12 key={slide.id} slide={slide} />
+    if (slide.type === "payments-v1") return <SlidePaymentsV1 key={slide.id} slide={slide} />
     if (slide.type === "video") return <SlideVideo key={slide.id} slide={slide} onEnded={() => goTo(indexRef.current + 1)} />
     return <SlideGallery key={slide.id} slide={slide} imageMs={config.imageMs} plain={slide.type === "fullscreen"} />
   })
@@ -174,7 +178,7 @@ export function Slideshow() {
         </div>
       )}
       {!loading && !views.length && <p className="grid h-full place-items-center text-2xl text-white/70">Add slides in public/slides/slides.json</p>}
-      {outgoing != null && outgoing !== index && views[outgoing] && (
+      {outgoing != null && outgoing !== index && views[outgoing] && displaySlides[outgoing]?.type !== "payments-v1" && (
         <div className="slide-out absolute inset-0">{views[outgoing]}</div>
       )}
       {views[index] && <div key={displaySlides[index]?.id || index} className="slide-in absolute inset-0">{views[index]}</div>}

@@ -38,13 +38,29 @@ export function useSheetEmployees(slides) {
 
 export function applySheet(slide, sheets) {
   const rows = sheets?.[String(slide?.sheetUrl || "").trim()]
-  if (!String(slide?.type || "").startsWith("employees") || !rows?.length) return slide
-  const photos = new Map((slide.employees || []).map((person) => [String(person.name || "").trim().toLowerCase(), person.image || ""]))
-  return {
-    ...slide,
-    employees: rows.map((row) => ({
-      ...row,
-      image: row.image || photos.get(String(row.name || "").trim().toLowerCase()) || "",
-    })),
+  const type = String(slide?.type || "")
+  if ((!type.startsWith("employees") && type !== "payments-v1") || !rows?.length) return slide
+  if (type === "payments-v1") {
+    const payments = rows
+      .filter((row) => row.paymentName || row.paymentAmount)
+      .map((row) => ({
+        name: row.paymentName || row.name,
+        paymentAmount: row.paymentAmount,
+        image: row.paymentImage || row.image || "",
+      }))
+    return payments.length ? { ...slide, employees: payments } : slide
   }
+  const photos = new Map((slide.employees || []).map((person) => [String(person.name || "").trim().toLowerCase(), person.image || ""]))
+  let employees = rows.map((row) => ({
+    ...row,
+    image: row.image || photos.get(String(row.name || "").trim().toLowerCase()) || "",
+  }))
+  if (type === "employees-v12") {
+    const amount = (value) => {
+      const number = Number(String(value ?? "").replace(/[^0-9.-]/g, ""))
+      return Number.isFinite(number) ? number : 0
+    }
+    employees = employees.slice().sort((a, b) => amount(b.monthlyAchieved) - amount(a.monthlyAchieved))
+  }
+  return { ...slide, employees }
 }

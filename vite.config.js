@@ -10,7 +10,7 @@ const slidesFile = path.resolve("public/slides/slides.json")
 const screensFile = path.resolve("data/screens.json")
 const allowed = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".mp4", ".webm"])
 const videoExt = new Set([".mp4", ".webm"])
-const slideTypes = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12", "video"])
+const slideTypes = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12", "payments-v1", "video"])
 
 function safeName(raw) {
   const base = path.basename(String(raw || "")).replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/^-+/, "")
@@ -60,7 +60,8 @@ function cleanConfig(body) {
       target: String(person?.target || "").slice(0, 40),
       quarterly: String(person?.quarterly || "").slice(0, 40),
       achieved: String(person?.achieved || "").slice(0, 40),
-    })).filter((person) => person.name || person.image || person.target || person.quarterly || person.achieved)
+      paymentAmount: String(person?.paymentAmount || "").slice(0, 40),
+    })).filter((person) => person.name || person.image || person.target || person.quarterly || person.achieved || person.paymentAmount)
     return {
       id: String(slide.id || `${slide.type}-${index + 1}`).replace(/[^a-zA-Z0-9_-]+/g, "-").slice(0, 40),
       type: slide.type,
@@ -73,6 +74,7 @@ function cleanConfig(body) {
       cta: String(slide.cta || ""),
       footer: String(slide.footer || ""),
       sheetUrl: String(slide.sheetUrl || "").trim().slice(0, 500),
+      seconds: Math.min(300, Math.max(0, Number(slide.seconds) || 0)),
     }
   })
   return {
@@ -120,8 +122,16 @@ function parseSheet(csv) {
   if (lines.length < 2) return []
   const headers = splitCsv(lines[0]).map((cell) => cell.trim().toLowerCase().replace(/\s+/g, " "))
   const column = (...names) => headers.findIndex((header) => names.includes(header))
+  const lastColumn = (...names) => headers.reduce((found, header, index) => (names.includes(header) ? index : found), -1)
   const cell = (cells, index) => (index >= 0 ? (cells[index] || "").trim() : "")
-  const nameIndex = column("names", "name", "employee")
+  const nameIndex = column("names", "name", "employee", "customer", "client")
+  const amountIndex = lastColumn("amount", "payment", "payment received", "received", "received amount")
+  const paymentNameIndex = lastColumn("name", "customer", "client")
+  const paymentImageIndex = lastColumn("image", "photo", "picture")
+  const dateIndex = column("date", "payment date", "received date")
+  const referenceIndex = column("invoice", "invoice no", "receipt", "reference", "ref")
+  const methodIndex = column("method", "payment method", "mode")
+  const vehicleIndex = column("vehicle", "car", "stock")
   const monthlyTarget = column("monthly target", "target")
   const monthlyAchieved = column("achieved monthly", "acheived monthly")
   const quarterlyTarget = column("quarterly target", "quaterly target", "quarterly", "quaterly")
@@ -150,8 +160,20 @@ function parseSheet(csv) {
       image: cell(cells, imageIndex),
       achievePercent: cell(cells, percentIndex),
       status: cell(cells, statusIndex),
+      paymentAmount: cell(cells, amountIndex),
+      paymentName: cell(cells, paymentNameIndex),
+      paymentImage: cell(cells, paymentImageIndex),
+      paymentDate: cell(cells, dateIndex),
+      reference: cell(cells, referenceIndex),
+      method: cell(cells, methodIndex),
+      vehicle: cell(cells, vehicleIndex),
     }
-  }).filter((row) => row.name && (statusIndex < 0 || row.status.toLowerCase() === "active"))
+  }).filter((row) => {
+    if (!row.name && !row.paymentName && !row.paymentAmount) return false
+    if (statusIndex < 0) return true
+    const status = row.status.toLowerCase()
+    return status === "active" || status === "received" || status === "paid"
+  })
 }
 function readScreens() {
   try {

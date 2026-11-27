@@ -5,7 +5,7 @@ $root = dirname(__DIR__);
 $slidesFile = $root . "/slides/slides.json";
 $imageDir = $root . "/slides/images";
 $allowed = ["jpg", "jpeg", "png", "webp", "gif", "svg", "mp4", "webm"];
-$types = ["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12", "video"];
+$types = ["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12", "payments-v1", "video"];
 
 function fail($status, $message) {
   http_response_code($status);
@@ -64,6 +64,14 @@ function columnIndex($headers, $names) {
   return -1;
 }
 
+function lastColumnIndex($headers, $names) {
+  $found = -1;
+  foreach ($headers as $index => $header) {
+    if (in_array($header, $names, true)) $found = $index;
+  }
+  return $found;
+}
+
 function cellValue($cells, $index) {
   return $index >= 0 && isset($cells[$index]) ? trim($cells[$index]) : "";
 }
@@ -76,7 +84,14 @@ function parseSheet($csv) {
   $headers = array_map(function ($cell) {
     return preg_replace("/\\s+/", " ", strtolower(trim($cell)));
   }, splitCsv($lines[0]));
-  $nameIndex = columnIndex($headers, ["names", "name", "employee"]);
+  $nameIndex = columnIndex($headers, ["names", "name", "employee", "customer", "client"]);
+  $amountIndex = lastColumnIndex($headers, ["amount", "payment", "payment received", "received", "received amount"]);
+  $paymentNameIndex = lastColumnIndex($headers, ["name", "customer", "client"]);
+  $paymentImageIndex = lastColumnIndex($headers, ["image", "photo", "picture"]);
+  $dateIndex = columnIndex($headers, ["date", "payment date", "received date"]);
+  $referenceIndex = columnIndex($headers, ["invoice", "invoice no", "receipt", "reference", "ref"]);
+  $methodIndex = columnIndex($headers, ["method", "payment method", "mode"]);
+  $vehicleIndex = columnIndex($headers, ["vehicle", "car", "stock"]);
   $monthlyTarget = columnIndex($headers, ["monthly target", "target"]);
   $monthlyAchieved = columnIndex($headers, ["achieved monthly", "acheived monthly"]);
   $quarterlyTarget = columnIndex($headers, ["quarterly target", "quaterly target", "quarterly", "quaterly"]);
@@ -90,9 +105,11 @@ function parseSheet($csv) {
   for ($i = 1; $i < count($lines); $i++) {
     $cells = splitCsv($lines[$i]);
     $name = cellValue($cells, $nameIndex);
+    $paymentName = cellValue($cells, $paymentNameIndex);
+    $paymentAmount = cellValue($cells, $amountIndex);
     $status = cellValue($cells, $statusIndex);
-    if ($name === "") continue;
-    if ($statusIndex >= 0 && strcasecmp($status, "Active") !== 0) continue;
+    if ($name === "" && $paymentName === "" && $paymentAmount === "") continue;
+    if ($statusIndex >= 0 && !in_array(strtolower($status), ["active", "received", "paid"], true)) continue;
     $monthlyTargetValue = cellValue($cells, $monthlyTarget);
     $quarterlyTargetValue = cellValue($cells, $quarterlyTarget);
     $quarterlyAchievedValue = cellValue($cells, $quarterlyAchieved);
@@ -109,6 +126,13 @@ function parseSheet($csv) {
       "achieved" => $quarterlyAchievedValue,
       "image" => cellValue($cells, $imageIndex),
       "achievePercent" => cellValue($cells, $percentIndex),
+      "paymentAmount" => cellValue($cells, $amountIndex),
+      "paymentName" => cellValue($cells, $paymentNameIndex),
+      "paymentImage" => cellValue($cells, $paymentImageIndex),
+      "paymentDate" => cellValue($cells, $dateIndex),
+      "reference" => cellValue($cells, $referenceIndex),
+      "method" => cellValue($cells, $methodIndex),
+      "vehicle" => cellValue($cells, $vehicleIndex),
     ];
   }
   return $rows;
@@ -222,8 +246,9 @@ if ($path === "/api/slides" && $method === "PUT") {
         "target" => substr((string) ($person["target"] ?? ""), 0, 40),
         "quarterly" => substr((string) ($person["quarterly"] ?? ""), 0, 40),
         "achieved" => substr((string) ($person["achieved"] ?? ""), 0, 40),
+        "paymentAmount" => substr((string) ($person["paymentAmount"] ?? ""), 0, 40),
       ];
-      if ($row["name"] || $row["image"] || $row["target"] || $row["quarterly"] || $row["achieved"]) $employees[] = $row;
+      if ($row["name"] || $row["image"] || $row["target"] || $row["quarterly"] || $row["achieved"] || $row["paymentAmount"]) $employees[] = $row;
     }
     $id = preg_replace("/[^a-zA-Z0-9_-]+/", "-", (string) ($slide["id"] ?? ($slide["type"] . "-" . ($index + 1))));
     $slides[] = [
@@ -238,6 +263,7 @@ if ($path === "/api/slides" && $method === "PUT") {
       "cta" => (string) ($slide["cta"] ?? ""),
       "footer" => (string) ($slide["footer"] ?? ""),
       "sheetUrl" => substr(trim((string) ($slide["sheetUrl"] ?? "")), 0, 500),
+      "seconds" => min(300, max(0, (int) ($slide["seconds"] ?? 0))),
     ];
   }
   $saved = [

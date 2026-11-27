@@ -31,7 +31,7 @@ export function slideImageUrl(name) {
   return `${IMAGE_DIR}/${value}`
 }
 
-const TYPES = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12", "video"])
+const TYPES = new Set(["welcome", "featured", "latest", "offers", "why", "brands", "contact", "gallery", "fullscreen", "employees", "employees-v1", "employees-v2", "employees-v3", "employees-v4", "employees-v5", "employees-v6", "employees-v7", "employees-v8", "employees-v9", "employees-v11", "employees-v12", "payments-v1", "video"])
 
 export function normalizeSlides(json) {
   const slides = Array.isArray(json?.slides) ? json.slides : []
@@ -47,6 +47,7 @@ export function normalizeSlides(json) {
         target: String(person?.target || ""),
         quarterly: String(person?.quarterly || ""),
         achieved: String(person?.achieved || ""),
+        paymentAmount: String(person?.paymentAmount || ""),
       })),
       kicker: slide.kicker || "",
       title: slide.title || "",
@@ -55,6 +56,7 @@ export function normalizeSlides(json) {
       cta: slide.cta || "",
       footer: slide.footer || "",
       sheetUrl: slide.sheetUrl || "",
+      seconds: Number(slide.seconds) > 0 ? Number(slide.seconds) : 0,
     }))
   return {
     intervalMs: Number(json?.intervalMs) > 0 ? Number(json.intervalMs) : 12000,

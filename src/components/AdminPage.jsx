@@ -16,6 +16,7 @@ const LAYOUTS = [
   ["employees-v9", "Layout 9"],
   ["employees-v11", "Layout 11"],
   ["employees-v12", "Version 1 · 1 profile"],
+  ["payments-v1", "Payment received v1"],
   ["video", "Full video"],
 ]
 
@@ -39,7 +40,7 @@ function blankSlide(type = "fullscreen") {
     id: `${type}-${Date.now()}`,
     type,
     images: [],
-    employees: String(type).startsWith("employees") ? [emptyEmployee()] : [],
+    employees: String(type).startsWith("employees") || type === "payments-v1" ? [{ ...emptyEmployee(), paymentAmount: "" }] : [],
     kicker: "",
     title: String(type).startsWith("employees") ? "EMPLOYEES PERFORMANCE" : "",
     subtitle: "",
@@ -304,11 +305,49 @@ export function AdminPage() {
               <button type="button" aria-label="Remove slide" onClick={() => setConfig({ ...config, slides: config.slides.filter((_, i) => i !== index) })} className="flex size-11 items-center justify-center rounded-full border border-red-400/40 text-red-300"><Trash2 className="size-5" /></button>
             </div>
 
+            {slide.type !== "video" && (
+              <label className="mt-4 block text-sm text-white/60">This slide (seconds). Leave empty to use the shared slide time.
+                <input type="number" min="3" max="300" value={slide.seconds || ""} placeholder={String(Math.round(config.intervalMs / 1000))} onChange={(event) => updateSlide(index, { seconds: Number(event.target.value) || 0 })} className="mt-1 h-11 w-40 rounded-xl border border-white/10 bg-black px-3 text-white" />
+              </label>
+            )}
+
             <label className="mt-4 block text-sm text-white/60">Google Sheet link
               <input value={slide.sheetUrl || ""} onChange={(event) => updateSlide(index, { sheetUrl: event.target.value })} placeholder="Open the tab, then paste that link (it includes gid=)" className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-black px-3 text-white" />
             </label>
 
-            {String(slide.type).startsWith("employees") ? (
+            {slide.type === "payments-v1" ? (
+              <div className="mt-4 space-y-4">
+                {(slide.employees || []).map((person, personIndex) => (
+                  <div key={personIndex} className="grid gap-3 rounded-2xl border border-white/10 p-4 md:grid-cols-[160px_1fr_1fr_auto]">
+                    <div>
+                      <img src={person.image ? slideImageUrl(person.image) : "/default-employee.png"} alt="" className={`h-32 w-full rounded-xl bg-[#1a1a1a] ${person.image ? "object-cover" : "object-contain"}`} />
+                      <label className="mt-2 block cursor-pointer text-center text-sm text-[#FF5722]">
+                        Upload image
+                        <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml" className="hidden" onChange={(event) => { upload(index, event.target.files, personIndex).catch((err) => setError(err.message)); event.target.value = "" }} />
+                      </label>
+                    </div>
+                    <label className="text-sm text-white/60">Name
+                      <input value={person.name} onChange={(event) => updateEmployee(index, personIndex, { name: event.target.value })} className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-black px-3 text-white" />
+                    </label>
+                    <label className="text-sm text-white/60">Amount received
+                      <input value={person.paymentAmount || ""} onChange={(event) => updateEmployee(index, personIndex, { paymentAmount: event.target.value })} className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-black px-3 text-white" />
+                    </label>
+                    <div className="flex items-start">
+                      <button type="button" aria-label="Remove payment" onClick={() => updateSlide(index, { employees: slide.employees.filter((_, i) => i !== personIndex) })} className="flex size-11 items-center justify-center rounded-full border border-red-400/40 text-red-300"><Trash2 className="size-5" /></button>
+                    </div>
+                    {!!files.length && (
+                      <label className="text-sm text-white/60 md:col-span-4">Image already in the folder
+                        <select value={person.image || ""} onChange={(event) => updateEmployee(index, personIndex, { image: event.target.value })} className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-black px-3 text-white">
+                          <option value="">No image</option>
+                          {files.map((file) => <option key={file} value={file}>{file}</option>)}
+                        </select>
+                      </label>
+                    )}
+                  </div>
+                ))}
+                <button type="button" onClick={() => updateSlide(index, { employees: [...(slide.employees || []), { ...emptyEmployee(), paymentAmount: "" }] })} className="font-heading h-12 rounded-full bg-[#FF5722] px-6 font-bold">Add payment</button>
+              </div>
+            ) : String(slide.type).startsWith("employees") ? (
               <div className="mt-4 space-y-4">
                 <label className="block text-sm text-white/60">Heading
                   <input value={slide.title || ""} onChange={(event) => updateSlide(index, { title: event.target.value })} className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-black px-3 text-white" />
@@ -426,6 +465,7 @@ export function AdminPage() {
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v9")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add layout 9</button>
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v11")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add layout 11</button>
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("employees-v12")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add version 1 · 1 profile</button>
+          <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("payments-v1")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add payment received v1</button>
           <button type="button" onClick={() => setConfig({ ...config, slides: [...config.slides, blankSlide("video")] })} className="h-12 rounded-full border border-white/20 px-6 font-semibold">Add full video</button>
         </div>
 

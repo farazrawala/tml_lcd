@@ -218,6 +218,28 @@ button {
   animation: duck-egg 3.4s ease-in-out infinite;
 }
 
+@keyframes count-pop {
+  0% { transform: scale(0.2) rotate(-8deg); opacity: 0; }
+  18% { transform: scale(1.35) rotate(2deg); opacity: 1; }
+  32% { transform: scale(0.92) rotate(0deg); }
+  46% { transform: scale(1.08); }
+  70% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes count-ring {
+  0% { transform: scale(0.4); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+.count-pop {
+  animation: count-pop 1s cubic-bezier(0.16, 0.84, 0.32, 1) both;
+}
+
+.count-ring {
+  animation: count-ring 1s ease-out both;
+}
+
 .slide-in {
   animation: fade-in 700ms ease both;
 }
